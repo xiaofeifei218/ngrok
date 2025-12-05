@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  ngrokd:
+    build: .
+    container_name: ngrokd
+    restart: unless-stopped
+
+    # 环境变量配置
+    environment:
+      # 必填: 您的域名
+      - DOMAIN=ngrok.example.com
+
+      # 可选: TLS 证书路径 (容器内路径)
+      - TLS_KEY=/app/certs/server.key
+      - TLS_CRT=/app/certs/server.crt
+
+      # 可选: 监听地址
+      - HTTP_ADDR=:80
+      - HTTPS_ADDR=:443
+      - TUNNEL_ADDR=:4443
+
+    # 端口映射
+    ports:
+      - "4443:4443"  # 客户端连接端口
+      - "80:80"      # HTTP 隧道端口
+      - "443:443"    # HTTPS 隧道端口
+
+    # 挂载 TLS 证书（如果有的话）
+    volumes:
+      - ./certs:/app/certs:ro
+      # 可选: 挂载日志目录
+      # - ./logs:/app/logs
+
+    # 网络配置
+    networks:
+      - ngrok-network
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "4443"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  ngrok-network:
+    driver: bridge
+
+# 使用示例:
+# 1. 创建 certs 目录并放置证书:
+#    mkdir -p certs
+#    cp your_server.key certs/server.key
+#    cp your_server.crt certs/server.crt
+#
+# 2. 修改 DOMAIN 环境变量为您的域名
+#
+# 3. 启动服务:
+#    docker-compose up -d
+#
+# 4. 查看日志:
+#    docker-compose logs -f
+#
+# 5. 停止服务:
+#    docker-compose down
