@@ -1,0 +1,59 @@
+# Git 相关
+.git
+.gitignore
+.gitattributes
+
+# 文档
+*.md
+docs/
+README.md
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker 相关
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# 构建产物（会在容器内重新构建）
+bin/
+pkg/
+
+# 证书和密钥（应通过卷挂载）
+certs/
+*.key
+*.crt
+*.pem
+
+# 日志
+logs/
+*.log
+
+# 环境配置
+.env
+.env.*
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# 测试文件
+*_test.go
+test/
+
+# CI/CD
+.travis.yml
+.github/
+.gitlab-ci.yml
+
+# 其他
+LICENSE
+CONTRIBUTORS
+contrib/
