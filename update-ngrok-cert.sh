@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 #
 # ngrok 证书自动更新脚本（简化版）
 # 每天凌晨执行，无脑复制证书并重启容器
@@ -6,18 +7,21 @@
 # 使用方法：
 # 1. 修改下面的路径配置
 # 2. chmod +x update-ngrok-cert.sh
-# 3. 添加到 crontab: 0 4 * * * /path/to/update-ngrok-cert.sh >> /tmp/ngrok-update.log 2>&1
+# 3. 添加到 crontab: 0 4 * * * /Users/xiaofeifei/Scripts/ngrok/update-ngrok-cert.sh >> /tmp/ngrok-update.log 2>&1
 #
 
 # ============================================
 # 配置部分 - 请根据实际情况修改
 # ============================================
 
+# 确保 cron 环境能找到 docker-compose / openssl（按需调整）
+export PATH="/usr/local/bin:/opt/anaconda3/bin:$PATH"
+
 # acme.sh 证书目录（Mac 上通常是这个路径）
 ACME_CERT_DIR="/Users/xiaofeifei/.ssl/xiaofeifei.fun"
 
 # ngrok 项目目录（改成你的实际路径）
-NGROK_DIR="/path/to/ngrok"
+NGROK_DIR="/Users/xiaofeifei/Scripts/ngrok"
 
 # ============================================
 # 主逻辑 - 无需修改
