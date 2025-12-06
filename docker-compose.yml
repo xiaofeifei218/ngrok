@@ -20,9 +20,9 @@ services:
 
     # 端口映射
     ports:
-      - "4443:4443"  # 客户端连接端口
-      - "80:80"      # HTTP 隧道端口
-      - "443:443"    # HTTPS 隧道端口
+      - "${TUNNEL_PORT:-4443}:4443"
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
 
     # 挂载 TLS 证书（如果有的话）
     volumes:
