@@ -2,10 +2,10 @@
 # 使用多阶段构建来减小最终镜像大小
 
 # 构建阶段
-FROM golang:1.7-alpine AS builder
+FROM golang:1.11-alpine AS builder
 
 # 安装构建依赖
-RUN apk add --no-cache git make mercurial
+RUN apk add --no-cache git make mercurial gcc musl-dev
 
 # 设置工作目录
 WORKDIR /ngrok
@@ -13,8 +13,9 @@ WORKDIR /ngrok
 # 复制源代码
 COPY . .
 
-# 设置 GOPATH
-ENV GOPATH=/ngrok
+# 设置环境变量
+ENV GOPATH=/ngrok \
+    GO111MODULE=off
 
 # 编译 ngrokd 服务端
 RUN make release-server
