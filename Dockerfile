@@ -2,10 +2,10 @@
 # 使用多阶段构建来减小最终镜像大小
 
 # 构建阶段
-FROM golang:1.7-alpine AS builder
+FROM golang:1.11-alpine AS builder
 
 # 安装构建依赖
-RUN apk add --no-cache git make mercurial
+RUN apk add --no-cache git make mercurial gcc musl-dev
 
 # 设置工作目录
 WORKDIR /ngrok
@@ -13,11 +13,27 @@ WORKDIR /ngrok
 # 复制源代码
 COPY . .
 
-# 设置 GOPATH
-ENV GOPATH=/ngrok
+# 设置环境变量
+ENV GOPATH=/ngrok \
+    GO111MODULE=off
 
 # 编译 ngrokd 服务端
-RUN make release-server
+# 分步骤处理，避免依赖版本冲突
+RUN set -ex && \
+    # 1. 构建 assets
+    GOOS="" GOARCH="" go get github.com/jteeuwen/go-bindata/go-bindata && \
+    bin/go-bindata -nomemcopy -pkg=assets -tags=release -debug=false \
+        -o=src/ngrok/server/assets/assets_release.go assets/server/... && \
+    # 2. 下载依赖（允许部分失败）
+    go get -tags 'release' -d -v ngrok/... || true && \
+    # 3. 修复 golang.org/x/net 版本到 Go 1.11 兼容分支
+    if [ -d src/golang.org/x/net ]; then \
+        cd src/golang.org/x/net && \
+        git checkout release-branch.go1.11 && \
+        cd /ngrok; \
+    fi && \
+    # 4. 编译 ngrokd
+    go install -tags 'release' ngrok/main/ngrokd
 
 # 运行阶段
 FROM alpine:3.8
