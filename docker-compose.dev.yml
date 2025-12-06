@@ -1,5 +1,3 @@
-version: '3.8'
-
 # 开发环境配置 - 无需 TLS 证书，快速启动
 
 services:
