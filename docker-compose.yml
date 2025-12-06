@@ -4,19 +4,19 @@ services:
     container_name: ngrokd
     restart: unless-stopped
 
-    # 环境变量配置
+    # 环境变量配置（从 .env 文件读取）
     environment:
-      # 必填: 您的域名
-      - DOMAIN=ngrok.example.com
+      # 必填: 您的域名（在 .env 文件中配置）
+      - DOMAIN=${DOMAIN:-ngrok.example.com}
 
       # 可选: TLS 证书路径 (容器内路径)
-      - TLS_KEY=/app/certs/server.key
-      - TLS_CRT=/app/certs/server.crt
+      - TLS_KEY=${TLS_KEY:-/app/certs/server.key}
+      - TLS_CRT=${TLS_CRT:-/app/certs/server.crt}
 
       # 可选: 监听地址
-      - HTTP_ADDR=:80
-      - HTTPS_ADDR=:443
-      - TUNNEL_ADDR=:4443
+      - HTTP_ADDR=${HTTP_ADDR:-:80}
+      - HTTPS_ADDR=${HTTPS_ADDR:-:443}
+      - TUNNEL_ADDR=${TUNNEL_ADDR:-:4443}
 
     # 端口映射
     ports:
